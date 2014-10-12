@@ -2,7 +2,7 @@
     "name": "wowengine/src/game/3.3.5a",
     "dependencies": {
         "%server" : "worldengine/wowengine-server#*",
-        "%sql" : "worldengine/wowengine-sql#*",
+        "%sql" : "worldengine/wowengine-sql#3.3.5a",
         "%conf" : "worldengine/tc-lib-core-configuration#*",
         "%crypt" : "worldengine/tc-lib-core-cryptography#*",
         "%db" : "worldengine/tc-lib-core-database#*",
