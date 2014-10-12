@@ -1,0 +1,24 @@
+{
+    "name": "wowengine/src/game/3.3.5a",
+    "dependencies": {
+        "%server" : "worldengine/wowengine-server#*",
+        "%conf" : "worldengine/tc-lib-core-configuration#*",
+        "%crypt" : "worldengine/tc-lib-core-cryptography#*",
+        "%db" : "worldengine/tc-lib-core-database#*",
+        "%ds" : "worldengine/tc-lib-core-datastores#*",
+        "%debug" : "worldengine/tc-lib-core-debugging#*",
+        "%dyn" : "worldengine/tc-lib-core-dynamic#*",
+        "%log" : "worldengine/tc-lib-core-logging#*",
+        "%network" : "worldengine/tc-lib-core-networking#*",
+        "%packets" : "worldengine/tc-lib-core-packets#*",
+        "%ph" : "worldengine/tc-lib-core-precompiledheaders#*",
+        "%threading" : "worldengine/tc-lib-core-threading#*",
+        "%utils" : "worldengine/tc-lib-core-utilities#*"
+    },
+    "devDependencies": {
+    },
+    "_comment_keep": "ensure we keep the right git repository configurations",
+    "keep": [
+        ".git/config"
+    ]
+}
