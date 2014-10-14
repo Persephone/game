@@ -13,10 +13,10 @@ and then run
 
 if you want to test the compiling, just run from the same folder 
 
-   mkdir build
-   cd build
-   cmake ../upt-modules/worldengine/src/game/3.3.5
-   make
+	mkdir build
+	cd build
+	cmake ../upt-modules/worldengine/src/game/3.3.5
+	make
 
 To compile you need the requirements specified in trinitycore project: http://collab.kpsn.org/display/tc/TrinityCore+Requirements
 
