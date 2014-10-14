@@ -9,7 +9,7 @@ To setup wowengine with upt just install upt with npm ( Nodejs is required to ru
 
 and then run
 
-> upt install worldengine/wowengine-game
+> upt install worldengine/wowengine-game#3.3.5a
 
 if you want to test the compiling, just run from the same folder 
 
