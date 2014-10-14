@@ -32,45 +32,46 @@ set(collision_STAT_SRCS
 
 include_directories(
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
-  ${CMAKE_SOURCE_DIR}/src/server/shared
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Configuration
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Database
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/LinkedReference
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Logging
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Threading
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Packets
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities
-  ${CMAKE_SOURCE_DIR}/src/server/shared/DataStores
-  ${CMAKE_SOURCE_DIR}/src/server/game/Addons
-  ${CMAKE_SOURCE_DIR}/src/server/game/Conditions
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Item
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/GameObject
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Creature
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object/Updates
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Unit
-  ${CMAKE_SOURCE_DIR}/src/server/game/Combat
-  ${CMAKE_SOURCE_DIR}/src/server/game/Loot
-  ${CMAKE_SOURCE_DIR}/src/server/game/Miscellaneous
-  ${CMAKE_SOURCE_DIR}/src/server/game/Grids
-  ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Cells
-  ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Notifiers
-  ${CMAKE_SOURCE_DIR}/src/server/game/Maps
-  ${CMAKE_SOURCE_DIR}/src/server/game/DataStores
-  ${CMAKE_SOURCE_DIR}/src/server/game/Movement/Waypoints
-  ${CMAKE_SOURCE_DIR}/src/server/game/Movement/Spline
-  ${CMAKE_SOURCE_DIR}/src/server/game/Movement
-  ${CMAKE_SOURCE_DIR}/src/server/game/Server
-  ${CMAKE_SOURCE_DIR}/src/server/game/Server/Protocol
-  ${CMAKE_SOURCE_DIR}/src/server/game/World
-  ${CMAKE_SOURCE_DIR}/src/server/game/Spells
-  ${CMAKE_SOURCE_DIR}/src/server/game/Spells/Auras
+  ${CMAKE_TC_MODULES}/dep/g3dlite/include
+  ${CMAKE_TC_MODULES}/dep/recastnavigation/Detour
+  ${CMAKE_TC_MODULES}/dep/recastnavigation/Detour/Include
+  ${CMAKE_TC_LIBRARIES}/core
+  ${CMAKE_TC_LIBRARIES}/core/Common
+  ${CMAKE_TC_LIBRARIES}/core/Configuration
+  ${CMAKE_TC_LIBRARIES}/core/Debugging
+  ${CMAKE_TC_LIBRARIES}/core/Database
+  ${CMAKE_TC_LIBRARIES}/core/Debugging
+  ${CMAKE_TC_LIBRARIES}/core/Dynamic
+  ${CMAKE_TC_LIBRARIES}/core/Dynamic/LinkedReference
+  ${CMAKE_TC_LIBRARIES}/core/Logging
+  ${CMAKE_TC_LIBRARIES}/core/Threading
+  ${CMAKE_TC_LIBRARIES}/core/Packets
+  ${CMAKE_TC_LIBRARIES}/core/Utilities
+  ${CMAKE_TC_LIBRARIES}/core/DataStores
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Addons
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Conditions
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Entities/Item
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Entities/GameObject
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Entities/Creature
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Entities/Object
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Entities/Object/Updates
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Entities/Unit
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Combat
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Loot
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Miscellaneous
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Grids
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Grids/Cells
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Grids/Notifiers
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Maps
+  ${CMAKE_WOWENGINE_335a_DIR}/world/DataStores
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Movement/Waypoints
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Movement/Spline
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Movement
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Server
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Server/Protocol
+  ${CMAKE_WOWENGINE_335a_DIR}/world/World
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Spells
+  ${CMAKE_WOWENGINE_335a_DIR}/world/Spells/Auras
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Management
   ${CMAKE_CURRENT_SOURCE_DIR}/Maps
@@ -85,7 +86,7 @@ add_library(collision STATIC
 )
 
 target_link_libraries(collision
-  shared
+  core
 )
 
 # Generate precompiled header

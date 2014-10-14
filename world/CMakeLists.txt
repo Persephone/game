@@ -50,15 +50,15 @@ file(GLOB_RECURSE sources_Warden Warden/*.cpp Warden/*.h)
 file(GLOB_RECURSE sources_Weather Weather/*.cpp Weather/*.h)
 file(GLOB_RECURSE sources_World World/*.cpp World/*.h)
 
-# Create game-libary
+# Create world-libary
 
 if (USE_COREPCH)
-  set(game_STAT_PCH_HDR PrecompiledHeaders/gamePCH.h)
-  set(game_STAT_PCH_SRC PrecompiledHeaders/gamePCH.cpp)
+  set(world_STAT_PCH_HDR PrecompiledHeaders/worldPCH.h)
+  set(world_STAT_PCH_SRC PrecompiledHeaders/worldPCH.cpp)
 endif ()
 
-set(game_STAT_SRCS
-  ${game_STAT_SRCS}
+set(world_STAT_SRCS
+  ${world_STAT_SRCS}
   ${sources_Accounts}
   ${sources_Achievements}
   ${sources_Addons}
@@ -104,31 +104,32 @@ set(game_STAT_SRCS
 
 include_directories(
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
-  ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-  ${CMAKE_SOURCE_DIR}/dep/SFMT
-  ${CMAKE_SOURCE_DIR}/dep/zlib
-  ${CMAKE_SOURCE_DIR}/src/server/collision
-  ${CMAKE_SOURCE_DIR}/src/server/collision/Management
-  ${CMAKE_SOURCE_DIR}/src/server/collision/Models
-  ${CMAKE_SOURCE_DIR}/src/server/collision/Maps
-  ${CMAKE_SOURCE_DIR}/src/server/shared
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Configuration
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography/Authentication
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Database
-  ${CMAKE_SOURCE_DIR}/src/server/shared/DataStores
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/LinkedReference
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Logging
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Networking
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Packets
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Threading
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities
+  ${CMAKE_TC_MODULES}/dep/recastnavigation/Detour
+  ${CMAKE_TC_MODULES}/dep/recastnavigation/Detour/Include
+  ${CMAKE_TC_MODULES}/dep/recastnavigation/Recast
+  ${CMAKE_TC_MODULES}/dep/recastnavigation/Recast/Include
+  ${CMAKE_TC_MODULES}/dep/g3dlite/include
+  ${CMAKE_TC_MODULES}/dep/SFMT
+  ${CMAKE_TC_MODULES}/dep/zlib
+  ${CMAKE_WOWENGINE_335a_DIR}/collision
+  ${CMAKE_WOWENGINE_335a_DIR}/collision/Management
+  ${CMAKE_WOWENGINE_335a_DIR}/collision/Models
+  ${CMAKE_WOWENGINE_335a_DIR}/collision/Maps
+  ${CMAKE_TC_LIBRARIES}/core
+  ${CMAKE_TC_LIBRARIES}/core/Common
+  ${CMAKE_TC_LIBRARIES}/core/Configuration
+  ${CMAKE_TC_LIBRARIES}/core/Cryptography
+  ${CMAKE_TC_LIBRARIES}/core/Cryptography/Authentication
+  ${CMAKE_TC_LIBRARIES}/core/Database
+  ${CMAKE_TC_LIBRARIES}/core/DataStores
+  ${CMAKE_TC_LIBRARIES}/core/Debugging
+  ${CMAKE_TC_LIBRARIES}/core/Dynamic/LinkedReference
+  ${CMAKE_TC_LIBRARIES}/core/Dynamic
+  ${CMAKE_TC_LIBRARIES}/core/Logging
+  ${CMAKE_TC_LIBRARIES}/core/Networking
+  ${CMAKE_TC_LIBRARIES}/core/Packets
+  ${CMAKE_TC_LIBRARIES}/core/Threading
+  ${CMAKE_TC_LIBRARIES}/core/Utilities
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Accounts
   ${CMAKE_CURRENT_SOURCE_DIR}/Achievements
@@ -200,20 +201,20 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/Warden/Modules
   ${CMAKE_CURRENT_SOURCE_DIR}/Weather
   ${CMAKE_CURRENT_SOURCE_DIR}/World
-  ${CMAKE_SOURCE_DIR}/src/server/scripts/PrecompiledHeaders
+  ${CMAKE_WOWENGINE_335a_DIR}/scripts/PrecompiledHeaders
   ${MYSQL_INCLUDE_DIR}
   ${OPENSSL_INCLUDE_DIR}
   ${VALGRIND_INCLUDE_DIR}
 )
 
-add_library(game STATIC
-  ${game_STAT_SRCS}
-  ${game_STAT_PCH_SRC}
+add_library(world STATIC
+  ${world_STAT_SRCS}
+  ${world_STAT_PCH_SRC}
 )
 
-add_dependencies(game revision.h)
+add_dependencies(world revision.h)
 
 # Generate precompiled header
 if (USE_COREPCH)
-  add_cxx_pch(game ${game_STAT_PCH_HDR} ${game_STAT_PCH_SRC})
+  add_cxx_pch(world ${world_STAT_PCH_HDR} ${world_STAT_PCH_SRC})
 endif ()
