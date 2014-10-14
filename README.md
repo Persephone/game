@@ -15,7 +15,7 @@ if you want to test the compiling, just run from the same folder
 
 	mkdir build
 	cd build
-	cmake ../upt-modules/wowengine/src/game/3.3.5a -DPREFIX=/home/wowengine-server
+	cmake ../upt-modules/wowengine/src/game/3.3.5a -DPREFIX=/home/$USER/wowengine-server
 	make
 
 To compile you need the requirements specified in trinitycore project: http://collab.kpsn.org/display/tc/TrinityCore+Requirements
