@@ -14,8 +14,8 @@
 
 if( SERVERS )
   set(sources_windows_Debugging
-    ${CMAKE_TC_LIBRARIES}/core/Debugging/WheatyExceptionReport.cpp
-    ${CMAKE_TC_LIBRARIES}/core/Debugging/WheatyExceptionReport.h
+    ${CMAKE_HW2CPP_LIBRARIES}/Debugging/WheatyExceptionReport.cpp
+    ${CMAKE_HW2CPP_LIBRARIES}/Debugging/WheatyExceptionReport.h
   )
   add_subdirectory(authserver)
   add_subdirectory(worldserver)

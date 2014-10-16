@@ -44,31 +44,31 @@ message("")
 
 include_directories(
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_TC_MODULES}/dep/recastnavigation/Detour
-  ${CMAKE_TC_MODULES}/dep/recastnavigation/Detour/Include
-  ${CMAKE_TC_MODULES}/dep/recastnavigation/Recast
-  ${CMAKE_TC_MODULES}/dep/recastnavigation/Recast/Include
-  ${CMAKE_TC_MODULES}/dep/g3dlite/include
-  ${CMAKE_TC_MODULES}/dep/SFMT
-  ${CMAKE_TC_MODULES}/dep/zlib
-  ${CMAKE_TC_LIBRARIES}/core
-  ${CMAKE_TC_LIBRARIES}/core/Common
-  ${CMAKE_TC_LIBRARIES}/core/Configuration
-  ${CMAKE_TC_LIBRARIES}/core/Cryptography
-  ${CMAKE_TC_LIBRARIES}/core/Database
-  ${CMAKE_TC_LIBRARIES}/core/DataStores
-  ${CMAKE_TC_LIBRARIES}/core/Debugging
-  ${CMAKE_TC_LIBRARIES}/core/Dynamic/LinkedReference
-  ${CMAKE_TC_LIBRARIES}/core/Dynamic
-  ${CMAKE_TC_LIBRARIES}/core/Logging
-  ${CMAKE_TC_LIBRARIES}/core/Packets
-  ${CMAKE_TC_LIBRARIES}/core/Threading
-  ${CMAKE_TC_LIBRARIES}/core/Utilities
+  ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour
+  ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour/Include
+  ${CMAKE_HW2CPP_DEP}/recastnavigation/Recast
+  ${CMAKE_HW2CPP_DEP}/recastnavigation/Recast/Include
+  ${CMAKE_HW2CPP_DEP}/g3dlite/include
+  ${CMAKE_HW2CPP_DEP}/SFMT
+  ${CMAKE_HW2CPP_DEP}/zlib
+  ${CMAKE_HW2CPP_LIBRARIES}
+  ${CMAKE_HW2CPP_LIBRARIES}/Common
+  ${CMAKE_HW2CPP_LIBRARIES}/Configuration
+  ${CMAKE_HW2CPP_LIBRARIES}/Cryptography
+  ${CMAKE_HW2CPP_LIBRARIES}/Database
+  ${CMAKE_WOWENGINE_LIB_DIR}/DataStores
+  ${CMAKE_HW2CPP_LIBRARIES}/Debugging
+  ${CMAKE_HW2CPP_LIBRARIES}/DataStructures/LinkedReference
+  ${CMAKE_HW2CPP_LIBRARIES}/DataStructures
+  ${CMAKE_HW2CPP_LIBRARIES}/Logging
+  ${CMAKE_HW2CPP_LIBRARIES}/Packets
+  ${CMAKE_HW2CPP_LIBRARIES}/Threading
+  ${CMAKE_HW2CPP_LIBRARIES}/Utilities
   ${CMAKE_WOWENGINE_335a_DIR}/collision
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Management
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Models
-  ${CMAKE_TC_LIBRARIES}/core
-  ${CMAKE_TC_LIBRARIES}/core/Database
+  ${CMAKE_HW2CPP_LIBRARIES}
+  ${CMAKE_HW2CPP_LIBRARIES}/Database
   ${CMAKE_WOWENGINE_335a_DIR}/world/Accounts
   ${CMAKE_WOWENGINE_335a_DIR}/world/Achievements
   ${CMAKE_WOWENGINE_335a_DIR}/world/Addons
@@ -86,7 +86,7 @@ include_directories(
   ${CMAKE_WOWENGINE_335a_DIR}/world/Chat
   ${CMAKE_WOWENGINE_335a_DIR}/world/Chat/Channels
   ${CMAKE_WOWENGINE_335a_DIR}/world/Conditions
-  ${CMAKE_TC_LIBRARIES}/core/Configuration
+  ${CMAKE_HW2CPP_LIBRARIES}/Configuration
   ${CMAKE_WOWENGINE_335a_DIR}/world/Combat
   ${CMAKE_WOWENGINE_335a_DIR}/world/DataStores
   ${CMAKE_WOWENGINE_335a_DIR}/world/DungeonFinding

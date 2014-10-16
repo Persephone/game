@@ -23,27 +23,12 @@ if(CMAKE_COMPILER_IS_GNUCXX AND NOT MINGW)
   add_definitions(-fno-delete-null-pointer-checks)
 endif()
 
-# Set wowengine directories
-get_filename_component(CMAKE_MODULES_ROOT_DIR "../../../../" REALPATH)
-add_subdirectory("${CMAKE_MODULES_ROOT_DIR}/trinitycore/src/project" "${CMAKE_BINARY_DIR}/tc_project")
+get_filename_component(WOWENGINE_SRC "../../" REALPATH)
+add_subdirectory("${WOWENGINE_SRC}/project" "${CMAKE_BINARY_DIR}/wowengine_project")
 
-set(CMAKE_MODULE_PATH "${CMAKE_TC_PROJECT}/cmake/macros")
-
-TC_SET_GLOBAL("CMAKE_WOWENGINE_ROOT_DIR" "${CMAKE_MODULES_ROOT_DIR}/wowengine")
-TC_SET_GLOBAL("CMAKE_WOWENGINE_335a_DIR" "${CMAKE_WOWENGINE_ROOT_DIR}/src/game/3.3.5a")
+HW2_SET_CACHE("CMAKE_WOWENGINE_335a_DIR" "${CMAKE_WOWENGINE_ROOT_DIR}/src/game/3.3.5a")
 
 if( SERVERS )
-  # Find revision ID and hash of the sourcetree
-  include("${CMAKE_TC_PROJECT}/cmake/genrev.cmake")
-
-  add_subdirectory(world)
-  add_subdirectory(collision)
-  add_subdirectory(scripts)
-
-  set(sources_windows_Debugging
-    ${CMAKE_TC_LIBRARIES}/core/Debugging/WheatyExceptionReport.cpp
-    ${CMAKE_TC_LIBRARIES}/core/Debugging/WheatyExceptionReport.h
-  )
 
   find_package(PCHSupport)
   find_package(OpenSSL REQUIRED)
@@ -61,6 +46,15 @@ if( SERVERS )
   if(NOT WITHOUT_GIT)
     find_package(Git)
   endif()
+
+  add_subdirectory(world)
+  add_subdirectory(collision)
+  add_subdirectory(scripts)
+
+  set(sources_windows_Debugging
+    ${CMAKE_HW2CPP_LIBRARIES}/Debugging/WheatyExceptionReport.cpp
+    ${CMAKE_HW2CPP_LIBRARIES}/Debugging/WheatyExceptionReport.h
+  )
 
   add_subdirectory(server)
 else()

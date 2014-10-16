@@ -43,18 +43,18 @@ endif()
 
 include_directories(
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_TC_LIBRARIES}/core
-  ${CMAKE_TC_LIBRARIES}/core/Common
-  ${CMAKE_TC_LIBRARIES}/core/Configuration
-  ${CMAKE_TC_LIBRARIES}/core/Database
-  ${CMAKE_TC_LIBRARIES}/core/Debugging
-  ${CMAKE_TC_LIBRARIES}/core/Packets
-  ${CMAKE_TC_LIBRARIES}/core/Cryptography
-  ${CMAKE_TC_LIBRARIES}/core/Cryptography/Authentication
-  ${CMAKE_TC_LIBRARIES}/core/Logging
-  ${CMAKE_TC_LIBRARIES}/core/Networking
-  ${CMAKE_TC_LIBRARIES}/core/Threading
-  ${CMAKE_TC_LIBRARIES}/core/Utilities
+  ${CMAKE_HW2CPP_LIBRARIES}
+  ${CMAKE_HW2CPP_LIBRARIES}/Common
+  ${CMAKE_HW2CPP_LIBRARIES}/Configuration
+  ${CMAKE_HW2CPP_LIBRARIES}/Database
+  ${CMAKE_HW2CPP_LIBRARIES}/Debugging
+  ${CMAKE_HW2CPP_LIBRARIES}/Packets
+  ${CMAKE_HW2CPP_LIBRARIES}/Cryptography
+  ${CMAKE_HW2CPP_LIBRARIES}/Cryptography/Authentication
+  ${CMAKE_HW2CPP_LIBRARIES}/Logging
+  ${CMAKE_HW2CPP_LIBRARIES}/Networking
+  ${CMAKE_HW2CPP_LIBRARIES}/Threading
+  ${CMAKE_HW2CPP_LIBRARIES}/Utilities
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Authentication
   ${CMAKE_CURRENT_SOURCE_DIR}/Realms
@@ -72,6 +72,7 @@ add_executable(authserver
 add_dependencies(authserver revision.h)
 
 if( NOT WIN32 )
+  HW2_GET_GLOBAL("CONF_DIR")
   set_target_properties(authserver PROPERTIES
     COMPILE_DEFINITIONS _TRINITY_REALM_CONFIG="${CONF_DIR}/authserver.conf"
   )
