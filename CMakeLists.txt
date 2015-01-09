@@ -28,25 +28,29 @@ add_subdirectory("${WOWENGINE_SRC}/project" "${CMAKE_BINARY_DIR}/wowengine_proje
 
 HW2_SET_CACHE("CMAKE_WOWENGINE_335a_DIR" "${CMAKE_WOWENGINE_ROOT_DIR}/src/game/3.3.5a")
 
+find_package(PCHSupport)
+find_package(OpenSSL REQUIRED)
+find_package(Threads REQUIRED)
+
+include(ConfigureBoost)
+find_package(MySQL REQUIRED)
+
+if( UNIX )
+  find_package(Readline)
+  find_package(ZLIB)
+  find_package(BZip2)
+endif()
+
+if(NOT WITHOUT_GIT)
+  find_package(Git)
+endif()
+
+include_directories(
+  ${CMAKE_BINARY_DIR}/hw2_project
+  ${CMAKE_BINARY_DIR}/wowengine_project
+)
+
 if( SERVERS )
-
-  find_package(PCHSupport)
-  find_package(OpenSSL REQUIRED)
-  find_package(Threads REQUIRED)
-
-  include(ConfigureBoost)
-  find_package(MySQL REQUIRED)
-
-  if( UNIX )
-    find_package(Readline)
-    find_package(ZLIB)
-    find_package(BZip2)
-  endif()
-
-  if(NOT WITHOUT_GIT)
-    find_package(Git)
-  endif()
-
   add_subdirectory(world)
   add_subdirectory(collision)
   add_subdirectory(scripts)
@@ -63,4 +67,8 @@ else()
     add_subdirectory(server)
   endif()
 endif()
+
+if ( TOOLS )
+  add_subdirectory(tool)
+endif(TOOLS)
 
