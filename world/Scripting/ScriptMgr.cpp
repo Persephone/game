@@ -33,6 +33,7 @@
 #include "Player.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "ModsMgr.h"
 
 // This is the global static registry of scripts.
 template<class TScript>
@@ -184,6 +185,8 @@ void ScriptMgr::Initialize()
 
     FillSpellSummary();
     AddScripts();
+    
+    sModsMgr->Initialization();
 
     TC_LOG_INFO("server.loading", ">> Loaded %u C++ scripts in %u ms", GetScriptCount(), GetMSTimeDiffToNow(oldMSTime));
 }

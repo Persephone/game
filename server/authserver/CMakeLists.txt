@@ -42,8 +42,6 @@ if( WIN32 )
 endif()
 
 include_directories(
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_HW2CPP_LIBRARIES}
   ${CMAKE_HW2CPP_LIBRARIES}/Common
   ${CMAKE_HW2CPP_LIBRARIES}/Configuration
   ${CMAKE_HW2CPP_LIBRARIES}/Database

@@ -21,7 +21,7 @@
 
 #include "Common.h"
 #include <atomic>
-#include "DBCStores.h"
+#include "world/DataStores/DBCStores.h"
 #include "QuestDef.h"
 #include "SharedDefines.h"
 #include "World.h"

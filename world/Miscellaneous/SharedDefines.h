@@ -20,7 +20,7 @@
 #define TRINITY_SHAREDDEFINES_H
 
 #include "Define.h"
-#include "DetourNavMesh.h"
+#include "recastnavigation/Detour/Include/DetourNavMesh.h"
 #include <cassert>
 
 enum SpellEffIndex

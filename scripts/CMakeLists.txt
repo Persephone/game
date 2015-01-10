@@ -42,7 +42,6 @@ message(STATUS "SCRIPT PREPARATION COMPLETE")
 message("")
 
 include_directories(
-  ${CMAKE_BINARY_DIR}
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour/Include
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Recast
@@ -50,7 +49,6 @@ include_directories(
   ${CMAKE_HW2CPP_DEP}/g3dlite/include
   ${CMAKE_HW2CPP_DEP}/SFMT
   ${CMAKE_HW2CPP_DEP}/zlib
-  ${CMAKE_HW2CPP_LIBRARIES}
   ${CMAKE_HW2CPP_LIBRARIES}/Common
   ${CMAKE_HW2CPP_LIBRARIES}/Configuration
   ${CMAKE_HW2CPP_LIBRARIES}/Cryptography
@@ -66,7 +64,6 @@ include_directories(
   ${CMAKE_WOWENGINE_335a_DIR}/collision
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Management
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Models
-  ${CMAKE_HW2CPP_LIBRARIES}
   ${CMAKE_HW2CPP_LIBRARIES}/Database
   ${CMAKE_WOWENGINE_335a_DIR}/world/Accounts
   ${CMAKE_WOWENGINE_335a_DIR}/world/Achievements

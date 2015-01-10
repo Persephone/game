@@ -103,7 +103,6 @@ set(world_STAT_SRCS
 )
 
 include_directories(
-  ${CMAKE_BINARY_DIR}
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour/Include
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Recast
@@ -115,7 +114,6 @@ include_directories(
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Management
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Models
   ${CMAKE_WOWENGINE_335a_DIR}/collision/Maps
-  ${CMAKE_HW2CPP_LIBRARIES}
   ${CMAKE_HW2CPP_LIBRARIES}/Common
   ${CMAKE_HW2CPP_LIBRARIES}/Configuration
   ${CMAKE_HW2CPP_LIBRARIES}/Cryptography
@@ -207,12 +205,19 @@ include_directories(
   ${VALGRIND_INCLUDE_DIR}
 )
 
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  HW2_SET_PATH("" ${dir})
+endforeach()
+
+
 add_library(world STATIC
   ${world_STAT_SRCS}
   ${world_STAT_PCH_SRC}
 )
 
 target_link_libraries(world
+  mods
   wowengine
 )
 

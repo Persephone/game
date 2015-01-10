@@ -1,0 +1,31 @@
+TrinityCore rev. unknown 1970-01-01 00:00:00 +0000 (Archived branch) (Unix, ) (worldserver-daemon)
+<Ctrl-C> to stop.
+
+ ______                       __
+/\__  _\       __          __/\ \__
+\/_/\ \/ _ __ /\_\    ___ /\_\ \, _\  __  __
+   \ \ \/\`'__\/\ \ /' _ `\/\ \ \ \/ /\ \/\ \
+    \ \ \ \ \/ \ \ \/\ \/\ \ \ \ \ \_\ \ \_\ \
+     \ \_\ \_\  \ \_\ \_\ \_\ \_\ \__\\/`____ \
+      \/_/\/_/   \/_/\/_/\/_/\/_/\/__/ `/___/> \
+                                 C O R E  /\___/
+http://TrinityCore.org                    \/__/
+
+Using configuration file /home/hw2/workspace/apps/WorldEngine/bin/hw2-wowengine-server/etc/worldserver.conf.
+Using SSL version: OpenSSL 1.0.1f 6 Jan 2014 (library: OpenSSL 1.0.1f 6 Jan 2014)
+Using Boost version: 1.54.0
+Opening DatabasePool 'wowengine-hw2-world'. Asynchronous connections: 1, synchronous connections: 1.
+DatabasePool 'wowengine-hw2-world' opened successfully. 2 total connections running.
+Opening DatabasePool 'wowengine-hw2-chars'. Asynchronous connections: 1, synchronous connections: 2.
+DatabasePool 'wowengine-hw2-chars' opened successfully. 3 total connections running.
+Opening DatabasePool 'wowengine-hw2-auth'. Asynchronous connections: 1, synchronous connections: 1.
+DatabasePool 'wowengine-hw2-auth' opened successfully. 2 total connections running.
+Realm running as realm ID 1
+Using World DB: TDB 335.55
+Will clear `logs` table of entries older than 1209600 seconds every 10 minutes.
+Using DataDir ./
+WORLD: MMap data directory is: ./mmaps
+VMap support included. LineOfSight: 1, getHeight: 1, indoorCheck: 1
+VMap data directory is: ./vmaps
+Map file './maps/0004331.map': does not exist!
+Correct *.map files not found in path './maps' or *.vmtree/*.vmtile files in './vmaps'. Please place *.map/*.vmtree/*.vmtile files in appropriate directories or correct the DataDir value in the worldserver.conf file.

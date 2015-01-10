@@ -31,11 +31,9 @@ set(collision_STAT_SRCS
 )
 
 include_directories(
-  ${CMAKE_BINARY_DIR}
   ${CMAKE_HW2CPP_DEP}/g3dlite/include
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour
   ${CMAKE_HW2CPP_DEP}/recastnavigation/Detour/Include
-  ${CMAKE_HW2CPP_LIBRARIES}
   ${CMAKE_HW2CPP_LIBRARIES}/Common
   ${CMAKE_HW2CPP_LIBRARIES}/Configuration
   ${CMAKE_HW2CPP_LIBRARIES}/Debugging

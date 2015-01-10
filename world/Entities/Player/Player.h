@@ -19,7 +19,7 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "DBCStores.h"
+#include "DataStores/DBCStores.h"
 #include "GroupReference.h"
 #include "MapReference.h"
 
