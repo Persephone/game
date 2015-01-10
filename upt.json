@@ -3,6 +3,7 @@
     "dependencies": {
         "%modules" : "worldengine/wowengine-modules#*",
         "%sql" : "worldengine/wowengine-sql#3.3.5a",
+        "%mods" : "worldengine/mods#*",
         "%conf" : "hw2-core/cpp-library-configuration#*",
         "%crypt" : "hw2-core/cpp-library-cryptography#*",
         "%db" : "hw2-core/cpp-library-database#*",
