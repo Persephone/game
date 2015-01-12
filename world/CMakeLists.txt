@@ -77,7 +77,6 @@ add_library(world STATIC
 )
 
 target_link_libraries(world
-  mods
   datastores
 )
 

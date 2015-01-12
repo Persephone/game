@@ -26,7 +26,6 @@ endif()
 
 #include common libraries
 include("${CMAKE_WOWENGINE_LIB_DIR}/DataStores/CMakeLists.txt")
-include("${CMAKE_WOWENGINE_LIB_DIR}/mods/CMakeLists.txt")
 
 if( SERVERS )
   include("${CMAKE_WOWENGINE_335a_DIR}/world/CMakeLists.txt")
@@ -41,6 +40,15 @@ if( SERVERS )
   # must follow this order
   include("${CMAKE_WOWENGINE_335a_MODS_DIR}/CMakeLists.txt")
   include("${CMAKE_WOWENGINE_GAME_MODS_DIR}/CMakeLists.txt")
+  include("${CMAKE_WOWENGINE_LIB_DIR}/mods/CMakeLists.txt")
+
+  # load all mods
+  LOAD_335a_MODS()
+  LOAD_GAME_MODS()
+  # then link mods library to other related
+  target_link_libraries(world
+    mods
+  )
 
   include("${CMAKE_WOWENGINE_335a_DIR}/server/CMakeLists.txt")
 else()

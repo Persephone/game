@@ -11,33 +11,35 @@ endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/../CMakeLists.txt")
 
-# add mods
-HW2_SUBDIRLIST(sub_DIRS  "${CMAKE_WOWENGINE_335a_MODS_DIR}" FALSE)
-FOREACH(subdir ${sub_DIRS})
-  if(EXISTS "${subdir}/CMakeLists.txt")
-    include("${subdir}/CMakeLists.txt")
-  endif()
-
-    set(mods_DIRS
-        ${mods_DIRS}
-        ${subdir}
-    )
-
-ENDFOREACH()
-
 # Select loader file
-if(NOT EXISTS "${CMAKE_WOWENGINE_335a_MODS_DIR}/ModsLoader.h")
+if(EXISTS "${CMAKE_WOWENGINE_335a_MODS_DIR}/ModsLoader.h")
   HW2_SET_GLOBAL("MODS_LOADER" ON)
   include_directories("${CMAKE_WOWENGINE_335a_MODS_DIR}")
 else()
-  include_directories("${CMAKE_WOWENGINE_LIB_DIR}/Mods/loader")
+  include_directories("${CMAKE_WOWENGINE_LIB_DIR}/mods/loader")
 endif()
 
-include_directories(
-  ${mods_DIRS}
-)
+MACRO(LOAD_335a_MODS)
+    # add mods
+    HW2_SUBDIRLIST(sub_DIRS  "${CMAKE_WOWENGINE_335a_MODS_DIR}" FALSE)
+    FOREACH(subdir ${sub_DIRS})
+      if(EXISTS "${subdir}/CMakeLists.txt")
+        include("${subdir}/CMakeLists.txt")
+      endif()
 
-message(STATUS "MODS PREPARATION COMPLETE")
+        set(mods_DIRS
+            ${mods_DIRS}
+            ${subdir}
+        )
+
+    ENDFOREACH()
+
+    include_directories(
+      ${mods_DIRS}
+    )
+ENDMACRO(LOAD_335a_MODS)
+
+message(STATUS "335a MODS PREPARATION COMPLETE")
 message("")
 
 
