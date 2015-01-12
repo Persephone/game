@@ -80,7 +80,7 @@ local.properties
 
 .upt.json
 ModsLoader.h
-mods/*/*
+mods/*/
 
 
 
