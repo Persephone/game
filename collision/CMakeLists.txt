@@ -12,14 +12,14 @@ if( USE_COREPCH )
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-file(GLOB_RECURSE sources_Management Management/*.cpp Management/*.h)
-file(GLOB_RECURSE sources_Maps Maps/*.cpp Maps/*.h)
-file(GLOB_RECURSE sources_Models Models/*.cpp Models/*.h)
-file(GLOB sources_localdir *.cpp *.h)
+file(GLOB_RECURSE sources_Management ${CMAKE_CURRENT_LIST_DIR}/Management/*.cpp ${CMAKE_CURRENT_LIST_DIR}/Management/*.h)
+file(GLOB_RECURSE sources_Maps ${CMAKE_CURRENT_LIST_DIR}/Maps/*.cpp ${CMAKE_CURRENT_LIST_DIR}/Maps/*.h)
+file(GLOB_RECURSE sources_Models ${CMAKE_CURRENT_LIST_DIR}/Models/*.cpp ${CMAKE_CURRENT_LIST_DIR}/Models/*.h)
+file(GLOB sources_localdir ${CMAKE_CURRENT_LIST_DIR}/*.cpp ${CMAKE_CURRENT_LIST_DIR}/*.h)
 
 if (USE_COREPCH)
-  set(collision_STAT_PCH_HDR PrecompiledHeaders/collisionPCH.h)
-  set(collision_STAT_PCH_SRC PrecompiledHeaders/collisionPCH.cpp)
+  set(collision_STAT_PCH_HDR ${CMAKE_CURRENT_LIST_DIR}/PrecompiledHeaders/collisionPCH.h)
+  set(collision_STAT_PCH_SRC ${CMAKE_CURRENT_LIST_DIR}/PrecompiledHeaders/collisionPCH.cpp)
 endif ()
 
 set(collision_STAT_SRCS
@@ -70,10 +70,9 @@ include_directories(
   ${CMAKE_WOWENGINE_335a_DIR}/world/World
   ${CMAKE_WOWENGINE_335a_DIR}/world/Spells
   ${CMAKE_WOWENGINE_335a_DIR}/world/Spells/Auras
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Management
-  ${CMAKE_CURRENT_SOURCE_DIR}/Maps
-  ${CMAKE_CURRENT_SOURCE_DIR}/Models
+  ${CMAKE_CURRENT_LIST_DIR}/Management
+  ${CMAKE_CURRENT_LIST_DIR}/Maps
+  ${CMAKE_CURRENT_LIST_DIR}/Models
   ${MYSQL_INCLUDE_DIR}
   ${VALGRIND_INCLUDE_DIR}
 )

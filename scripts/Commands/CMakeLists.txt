@@ -8,7 +8,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-file(GLOB_RECURSE sources_Commands Commands/*.cpp Commands/*.h)
+file(GLOB_RECURSE sources_Commands "${CMAKE_CURRENT_LIST_DIR}/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/*.h")
 
 set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}

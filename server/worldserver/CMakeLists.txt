@@ -8,14 +8,14 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-file(GLOB_RECURSE sources_CommandLine CommandLine/*.cpp CommandLine/*.h)
-file(GLOB_RECURSE sources_RemoteAccess RemoteAccess/*.cpp RemoteAccess/*.h)
-file(GLOB_RECURSE sources_TCSoap TCSoap/*.cpp TCSoap/*.h)
-file(GLOB sources_localdir *.cpp *.h)
+file(GLOB_RECURSE sources_CommandLine ${CMAKE_CURRENT_LIST_DIR}/CommandLine/*.cpp ${CMAKE_CURRENT_LIST_DIR}/CommandLine/*.h)
+file(GLOB_RECURSE sources_RemoteAccess ${CMAKE_CURRENT_LIST_DIR}/RemoteAccess/*.cpp ${CMAKE_CURRENT_LIST_DIR}/RemoteAccess/*.h)
+file(GLOB_RECURSE sources_TCSoap ${CMAKE_CURRENT_LIST_DIR}/TCSoap/*.cpp ${CMAKE_CURRENT_LIST_DIR}/TCSoap/*.h)
+file(GLOB sources_localdir ${CMAKE_CURRENT_LIST_DIR}/*.cpp ${CMAKE_CURRENT_LIST_DIR}/*.h)
 
 if (USE_COREPCH)
-  set(worldserver_PCH_HDR PrecompiledHeaders/worldserverPCH.h)
-  set(worldserver_PCH_SRC PrecompiledHeaders/worldserverPCH.cpp)
+  set(worldserver_PCH_HDR ${CMAKE_CURRENT_LIST_DIR}/PrecompiledHeaders/worldserverPCH.h)
+  set(worldserver_PCH_SRC ${CMAKE_CURRENT_LIST_DIR}/PrecompiledHeaders/worldserverPCH.cpp)
 endif()
 
 set(worldserver_SRCS
@@ -131,10 +131,9 @@ include_directories(
   ${CMAKE_WOWENGINE_335a_DIR}/world/World
   ${CMAKE_WOWENGINE_335a_DIR}/server/authserver/Server
   ${CMAKE_WOWENGINE_335a_DIR}/server/authserver/Realms
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/CommandLine
-  ${CMAKE_CURRENT_SOURCE_DIR}/RemoteAccess
-  ${CMAKE_CURRENT_SOURCE_DIR}/TCSoap
+  ${CMAKE_CURRENT_LIST_DIR}/CommandLine
+  ${CMAKE_CURRENT_LIST_DIR}/RemoteAccess
+  ${CMAKE_CURRENT_LIST_DIR}/TCSoap
   ${MYSQL_INCLUDE_DIR}
   ${OPENSSL_INCLUDE_DIR}
   ${VALGRIND_INCLUDE_DIR}
@@ -161,13 +160,13 @@ endif()
 set_target_properties(worldserver PROPERTIES LINK_FLAGS "${worldserver_LINK_FLAGS}")
 
 target_link_libraries(worldserver
-  wowengine
   world
   core
   scripts
   collision
   g3dlib
   gsoap
+  mods
   Detour
   ${JEMALLOC_LIBRARY}
   ${READLINE_LIBRARY}
@@ -183,22 +182,22 @@ if( WIN32 )
   if ( MSVC )
     add_custom_command(TARGET worldserver
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
     )
   elseif ( MINGW )
     add_custom_command(TARGET worldserver
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/
     )
   endif()
 endif()
 
 if( UNIX )
   install(TARGETS worldserver DESTINATION bin)
-  install(FILES worldserver.conf.dist DESTINATION ${CONF_DIR})
+  install(FILES ${CMAKE_CURRENT_LIST_DIR}/worldserver.conf.dist DESTINATION ${CONF_DIR})
 elseif( WIN32 )
   install(TARGETS worldserver DESTINATION "${CMAKE_INSTALL_PREFIX}")
-  install(FILES worldserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  install(FILES ${CMAKE_CURRENT_LIST_DIR}/worldserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 # Generate precompiled header

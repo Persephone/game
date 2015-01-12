@@ -22,7 +22,7 @@
 #include "Common.h"
 #include "DBCEnums.h"
 #include "Define.h"
-#include "Path.h"
+#include "Waypoints/Path.h"
 #include "Util.h"
 
 #include <map>

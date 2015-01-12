@@ -1,9 +1,11 @@
 {
     "name": "wowengine/src/game/3.3.5a",
     "dependencies": {
-        "%modules" : "worldengine/wowengine-modules#*",
-        "%sql" : "worldengine/wowengine-sql#3.3.5a",
-        "%mods" : "wowengine/mods#*",
+        "%modules" : "wowengine/modules#*",
+        "%sql" : "wowengine/sql#3.3.5a",
+        "%mods" : "wowengine/game-mods#*",
+        "%lib-mods" : "wowengine/lib-mods#*",
+        "%lib-datastores" : "wowengine/lib-datastores#*",
         "%conf" : "hw2-core/cpp-library-configuration#*",
         "%crypt" : "hw2-core/cpp-library-cryptography#*",
         "%db" : "hw2-core/cpp-library-database#*",

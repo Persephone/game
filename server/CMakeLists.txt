@@ -17,6 +17,7 @@ if( SERVERS )
     ${CMAKE_HW2CPP_LIBRARIES}/Debugging/WheatyExceptionReport.cpp
     ${CMAKE_HW2CPP_LIBRARIES}/Debugging/WheatyExceptionReport.h
   )
-  add_subdirectory(authserver)
-  add_subdirectory(worldserver)
+
+  include("${CMAKE_CURRENT_LIST_DIR}/authserver/CMakeLists.txt")
+  include("${CMAKE_CURRENT_LIST_DIR}/worldserver/CMakeLists.txt")
 endif()

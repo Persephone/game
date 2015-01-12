@@ -10,14 +10,14 @@
 
 ########### authserver ###############
 
-file(GLOB_RECURSE sources_authentication Authentication/*.cpp Authentication/*.h)
-file(GLOB_RECURSE sources_realms Realms/*.cpp Realms/*.h)
-file(GLOB_RECURSE sources_server Server/*.cpp Server/*.h)
-file(GLOB sources_localdir *.cpp *.h)
+file(GLOB_RECURSE sources_authentication "${CMAKE_CURRENT_LIST_DIR}/Authentication/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/Authentication/*.h")
+file(GLOB_RECURSE sources_realms "${CMAKE_CURRENT_LIST_DIR}/Realms/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/Realms/*.h")
+file(GLOB_RECURSE sources_server "${CMAKE_CURRENT_LIST_DIR}/Server/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/Server/*.h")
+file(GLOB sources_localdir "${CMAKE_CURRENT_LIST_DIR}/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/*.h")
 
 if (USE_COREPCH)
-  set(authserver_PCH_HDR PrecompiledHeaders/authPCH.h)
-  set(authserver_PCH_SRC PrecompiledHeaders/authPCH.cpp)
+  set(authserver_PCH_HDR "${CMAKE_CURRENT_LIST_DIR}/PrecompiledHeaders/authPCH.h")
+  set(authserver_PCH_SRC "${CMAKE_CURRENT_LIST_DIR}/PrecompiledHeaders/authPCH.cpp")
 endif()
 
 set(authserver_SRCS
@@ -53,10 +53,9 @@ include_directories(
   ${CMAKE_HW2CPP_LIBRARIES}/Networking
   ${CMAKE_HW2CPP_LIBRARIES}/Threading
   ${CMAKE_HW2CPP_LIBRARIES}/Utilities
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Authentication
-  ${CMAKE_CURRENT_SOURCE_DIR}/Realms
-  ${CMAKE_CURRENT_SOURCE_DIR}/Server
+  ${CMAKE_CURRENT_LIST_DIR}/Authentication
+  ${CMAKE_CURRENT_LIST_DIR}/Realms
+  ${CMAKE_CURRENT_LIST_DIR}/Server
   ${MYSQL_INCLUDE_DIR}
   ${OPENSSL_INCLUDE_DIR}
   ${VALGRIND_INCLUDE_DIR}
@@ -88,22 +87,22 @@ if( WIN32 )
   if ( MSVC )
     add_custom_command(TARGET authserver
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/authserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/authserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
     )
   elseif ( MINGW )
     add_custom_command(TARGET authserver
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/authserver.conf.dist ${CMAKE_BINARY_DIR}/bin/
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/authserver.conf.dist ${CMAKE_BINARY_DIR}/bin/
     )
   endif()
 endif()
 
 if( UNIX )
   install(TARGETS authserver DESTINATION bin)
-  install(FILES  authserver.conf.dist DESTINATION ${CONF_DIR})
+  install(FILES  ${CMAKE_CURRENT_LIST_DIR}/authserver.conf.dist DESTINATION ${CONF_DIR})
 elseif( WIN32 )
   install(TARGETS authserver DESTINATION "${CMAKE_INSTALL_PREFIX}")
-  install(FILES authserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  install(FILES ${CMAKE_CURRENT_LIST_DIR}/authserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 # Generate precompiled header
