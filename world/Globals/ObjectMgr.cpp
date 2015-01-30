@@ -556,17 +556,17 @@ void ObjectMgr::LoadCreatureTemplateAddons()
         creatureAddon.auras.resize(tokens.size());
         for (Tokenizer::const_iterator itr = tokens.begin(); itr != tokens.end(); ++itr)
         {
-            SpellInfo const* AdditionalSpellInfo = sSpellMgr->GetSpellInfo(uint32(atol(*itr)));
+            SpellInfo const* AdditionalSpellInfo = sSpellMgr->GetSpellInfo(atoul(*itr));
             if (!AdditionalSpellInfo)
             {
-                TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has wrong spell %u defined in `auras` field in `creature_template_addon`.", entry, uint32(atol(*itr)));
+                TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has wrong spell %lu defined in `auras` field in `creature_template_addon`.", entry, atoul(*itr));
                 continue;
             }
 
             if (AdditionalSpellInfo->HasAura(SPELL_AURA_CONTROL_VEHICLE))
-                TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has SPELL_AURA_CONTROL_VEHICLE aura %u defined in `auras` field in `creature_template_addon`.", entry, uint32(atol(*itr)));
+                TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has SPELL_AURA_CONTROL_VEHICLE aura %lu defined in `auras` field in `creature_template_addon`.", entry, atoul(*itr));
 
-            creatureAddon.auras[i++] = uint32(atol(*itr));
+            creatureAddon.auras[i++] = atoul(*itr);
         }
 
         if (creatureAddon.mount)
@@ -1004,17 +1004,17 @@ void ObjectMgr::LoadCreatureAddons()
         creatureAddon.auras.resize(tokens.size());
         for (Tokenizer::const_iterator itr = tokens.begin(); itr != tokens.end(); ++itr)
         {
-            SpellInfo const* AdditionalSpellInfo = sSpellMgr->GetSpellInfo(uint32(atol(*itr)));
+            SpellInfo const* AdditionalSpellInfo = sSpellMgr->GetSpellInfo(atoul(*itr));
             if (!AdditionalSpellInfo)
             {
-                TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has wrong spell %u defined in `auras` field in `creature_addon`.", guid, uint32(atol(*itr)));
+                TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has wrong spell %lu defined in `auras` field in `creature_addon`.", guid, atoul(*itr));
                 continue;
             }
 
             if (AdditionalSpellInfo->HasAura(SPELL_AURA_CONTROL_VEHICLE))
-                TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has SPELL_AURA_CONTROL_VEHICLE aura %u defined in `auras` field in `creature_addon`.", guid, uint32(atol(*itr)));
+                TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has SPELL_AURA_CONTROL_VEHICLE aura %lu defined in `auras` field in `creature_addon`.", guid, atoul(*itr));
 
-            creatureAddon.auras[i++] = uint32(atol(*itr));
+            creatureAddon.auras[i++] = atoul(*itr);
         }
 
         if (creatureAddon.mount)
@@ -1622,7 +1622,7 @@ void ObjectMgr::LoadCreatures()
                     spawnMasks[i] |= (1 << k);
 
     _creatureDataStore.rehash(result->GetRowCount());
-    uint32 count = 0;
+
     do
     {
         Field* fields = result->Fetch();
@@ -1734,15 +1734,28 @@ void ObjectMgr::LoadCreatures()
             data.orientation = Position::NormalizeOrientation(data.orientation);
         }
 
+        if (sWorld->getBoolConfig(CONFIG_CALCULATE_CREATURE_ZONE_AREA_DATA))
+        {
+            uint32 zoneId = 0;
+            uint32 areaId = 0;
+            sMapMgr->GetZoneAndAreaId(zoneId, areaId, data.mapid, data.posX, data.posY, data.posZ);
+
+            PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_ZONE_AREA_DATA);
+
+            stmt->setUInt32(0, zoneId);
+            stmt->setUInt32(1, areaId);
+            stmt->setUInt64(2, guid);
+
+            WorldDatabase.Execute(stmt);
+        }
+
         // Add to grid if not managed by the game event or pool system
         if (gameEvent == 0 && PoolId == 0)
             AddCreatureToGrid(guid, &data);
+    }
+    while (result->NextRow());
 
-        ++count;
-
-    } while (result->NextRow());
-
-    TC_LOG_INFO("server.loading", ">> Loaded %u creatures in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " creatures in %u ms", _creatureDataStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::AddCreatureToGrid(uint32 guid, CreatureData const* data)
@@ -1913,8 +1926,6 @@ void ObjectMgr::LoadGameobjects()
 {
     uint32 oldMSTime = getMSTime();
 
-    uint32 count = 0;
-
     //                                                0                1   2    3           4           5           6
     QueryResult result = WorldDatabase.Query("SELECT gameobject.guid, id, map, position_x, position_y, position_z, orientation, "
     //   7          8          9          10         11             12            13     14         15         16          17
@@ -1937,6 +1948,7 @@ void ObjectMgr::LoadGameobjects()
                     spawnMasks[i] |= (1 << k);
 
     _gameObjectDataStore.rehash(result->GetRowCount());
+
     do
     {
         Field* fields = result->Fetch();
@@ -2046,12 +2058,27 @@ void ObjectMgr::LoadGameobjects()
             data.phaseMask = 1;
         }
 
+        if (sWorld->getBoolConfig(CONFIG_CALCULATE_GAMEOBJECT_ZONE_AREA_DATA))
+        {
+            uint32 zoneId = 0;
+            uint32 areaId = 0;
+            sMapMgr->GetZoneAndAreaId(zoneId, areaId, data.mapid, data.posX, data.posY, data.posZ);
+
+            PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_GAMEOBJECT_ZONE_AREA_DATA);
+
+            stmt->setUInt32(0, zoneId);
+            stmt->setUInt32(1, areaId);
+            stmt->setUInt64(2, guid);
+
+            WorldDatabase.Execute(stmt);
+        }
+
         if (gameEvent == 0 && PoolId == 0)                      // if not this is to be managed by GameEvent System or Pool system
             AddGameobjectToGrid(guid, &data);
-        ++count;
-    } while (result->NextRow());
+    }
+    while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", ">> Loaded %lu gameobjects in %u ms", (unsigned long)_gameObjectDataStore.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " gameobjects in %u ms", _gameObjectDataStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::AddGameobjectToGrid(uint32 guid, GameObjectData const* data)
@@ -2106,7 +2133,7 @@ ObjectGuid ObjectMgr::GetPlayerGUIDByName(std::string const& name) const
 bool ObjectMgr::GetPlayerNameByGUID(ObjectGuid guid, std::string& name) const
 {
     // prevent DB access for online player
-    if (Player* player = ObjectAccessor::FindPlayer(guid))
+    if (Player* player = ObjectAccessor::FindConnectedPlayer(guid))
     {
         name = player->GetName();
         return true;
@@ -2130,7 +2157,7 @@ bool ObjectMgr::GetPlayerNameByGUID(ObjectGuid guid, std::string& name) const
 uint32 ObjectMgr::GetPlayerTeamByGUID(ObjectGuid guid) const
 {
     // prevent DB access for online player
-    if (Player* player = ObjectAccessor::FindPlayer(guid))
+    if (Player* player = ObjectAccessor::FindConnectedPlayer(guid))
     {
         return Player::TeamForRace(player->getRace());
     }
@@ -2153,7 +2180,7 @@ uint32 ObjectMgr::GetPlayerTeamByGUID(ObjectGuid guid) const
 uint32 ObjectMgr::GetPlayerAccountIdByGUID(ObjectGuid guid) const
 {
     // prevent DB access for online player
-    if (Player* player = ObjectAccessor::FindPlayer(guid))
+    if (Player* player = ObjectAccessor::FindConnectedPlayer(guid))
     {
         return player->GetSession()->GetAccountId();
     }
@@ -5480,7 +5507,7 @@ void ObjectMgr::ReturnOrDeleteOldMails(bool serverUp)
 
         Player* player = NULL;
         if (serverUp)
-            player = ObjectAccessor::FindPlayer(ObjectGuid(HIGHGUID_PLAYER, m->receiver));
+            player = ObjectAccessor::FindConnectedPlayer(ObjectGuid(HIGHGUID_PLAYER, m->receiver));
 
         if (player && player->m_mailsLoaded)
         {                                                   // this code will run very improbably (the time is between 4 and 5 am, in game is online a player, who has old mail
@@ -5646,35 +5673,32 @@ void ObjectMgr::LoadAreaTriggerScripts()
     uint32 oldMSTime = getMSTime();
 
     _areaTriggerScriptStore.clear();                            // need for reload case
-    QueryResult result = WorldDatabase.Query("SELECT entry, ScriptName FROM areatrigger_scripts");
 
+    QueryResult result = WorldDatabase.Query("SELECT entry, ScriptName FROM areatrigger_scripts");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 areatrigger scripts. DB table `areatrigger_scripts` is empty.");
         return;
     }
 
-    uint32 count = 0;
-
     do
     {
-        ++count;
-
         Field* fields = result->Fetch();
 
-        uint32 Trigger_ID      = fields[0].GetUInt32();
-        const char *scriptName = fields[1].GetCString();
+        uint32 triggerId       = fields[0].GetUInt32();
+        char const* scriptName = fields[1].GetCString();
 
-        AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(Trigger_ID);
+        AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(triggerId);
         if (!atEntry)
         {
-            TC_LOG_ERROR("sql.sql", "Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTrigger (ID: %u) does not exist in `AreaTrigger.dbc`.", triggerId);
             continue;
         }
-        _areaTriggerScriptStore[Trigger_ID] = GetScriptId(scriptName);
-    } while (result->NextRow());
+        _areaTriggerScriptStore[triggerId] = GetScriptId(scriptName);
+    }
+    while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u areatrigger scripts in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " areatrigger scripts in %u ms", _areaTriggerScriptStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 uint32 ObjectMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid, uint32 team)
@@ -7560,7 +7584,7 @@ bool isValidString(const std::wstring& wstr, uint32 strictMask, bool numericOrSp
     return false;
 }
 
-uint8 ObjectMgr::CheckPlayerName(const std::string& name, bool create)
+ResponseCodes ObjectMgr::CheckPlayerName(const std::string& name, bool create)
 {
     std::wstring wname;
     if (!Utf8toWStr(name, wname))
@@ -8517,31 +8541,32 @@ void ObjectMgr::LoadScriptNames()
 {
     uint32 oldMSTime = getMSTime();
 
-    _scriptNamesStore.push_back("");
+    _scriptNamesStore.emplace_back("");
+
     QueryResult result = WorldDatabase.Query(
-      "SELECT DISTINCT(ScriptName) FROM achievement_criteria_data WHERE ScriptName <> '' AND type = 11 "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM battleground_template WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM creature_template WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM gameobject_template WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM item_template WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM areatrigger_scripts WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM spell_script_names WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM transports WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM game_weather WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM conditions WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(ScriptName) FROM outdoorpvp_template WHERE ScriptName <> '' "
-      "UNION "
-      "SELECT DISTINCT(script) FROM instance_template WHERE script <> ''");
+        "SELECT DISTINCT(ScriptName) FROM achievement_criteria_data WHERE ScriptName <> '' AND type = 11 "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM battleground_template WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM creature_template WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM gameobject_template WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM item_template WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM areatrigger_scripts WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM spell_script_names WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM transports WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM game_weather WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM conditions WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM outdoorpvp_template WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(script) FROM instance_template WHERE script <> ''");
 
     if (!result)
     {
@@ -8549,20 +8574,23 @@ void ObjectMgr::LoadScriptNames()
         return;
     }
 
-    uint32 count = 1;
-
     do
     {
-        _scriptNamesStore.push_back((*result)[0].GetString());
-        ++count;
+        _scriptNamesStore.emplace_back((*result)[0].GetCString());
     }
     while (result->NextRow());
 
     std::sort(_scriptNamesStore.begin(), _scriptNamesStore.end());
-    TC_LOG_INFO("server.loading", ">> Loaded %d Script Names in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+
+#ifdef SCRIPTS
+    for (size_t i = 1; i < _scriptNamesStore.size(); ++i)
+        UnusedScriptNames.push_back(_scriptNamesStore[i]);
+#endif
+
+    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " ScriptNames in %u ms", _scriptNamesStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
-uint32 ObjectMgr::GetScriptId(const char *name)
+uint32 ObjectMgr::GetScriptId(char const* name)
 {
     // use binary search to find the script name in the sorted vector
     // assume "" is the first element

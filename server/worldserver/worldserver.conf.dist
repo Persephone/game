@@ -27,6 +27,9 @@
 #    CONSOLE AND REMOTE ACCESS
 #    CHARACTER DELETE OPTIONS
 #    CUSTOM SERVER OPTIONS
+#    AUCTION HOUSE BOT SETTINGS
+#    AUCTION HOUSE BOT ITEM FINE TUNING
+#    AUCTION HOUSE BOT BUYER CONFIG
 #    LOGGING SYSTEM SETTINGS
 #    PACKET SPOOF PROTECTION SETTINGS
 #
@@ -266,9 +269,9 @@ ChangeWeatherInterval = 600000
 #
 #    PlayerSaveInterval
 #        Description: Time (in milliseconds) for player save interval.
-#        Default:     900000 - (15 min)
+#        Default:     90000 - (90 seconds)
 
-PlayerSaveInterval = 900000
+PlayerSaveInterval = 90000
 
 #
 #    PlayerSave.Stats.MinLevel
@@ -288,7 +291,7 @@ PlayerSave.Stats.SaveOnlyOnLogout = 1
 
 #
 #    mmap.enablePathFinding
-#        Description: Enable/Disable pathfinding using mmaps - experimental.
+#        Description: Enable/Disable pathfinding using mmaps - recommended.
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
@@ -578,6 +581,22 @@ MinCharterName = 2
 MinPetName = 2
 
 #
+#    Guild.CharterCost
+#    ArenaTeam.CharterCost.2v2
+#    ArenaTeam.CharterCost.3v3
+#    ArenaTeam.CharterCost.5v5
+#        Description: Amount of money (in Copper) the petitions costs.
+#        Default:     1000 - (10 Silver)
+#                     800000 - (80 Gold)
+#                     1200000 - (120 Gold)
+#                     2000000 - (200 Gold)
+
+Guild.CharterCost = 1000
+ArenaTeam.CharterCost.2v2 = 800000
+ArenaTeam.CharterCost.3v3 = 1200000
+ArenaTeam.CharterCost.5v5 = 2000000
+
+#
 #    MaxWhoListReturns
 #        Description: Set the max number of players returned in the /who list and interface.
 #        Default:     49 - (stable)
@@ -853,6 +872,14 @@ Instance.UnloadDelay = 1800000
 #                     true  - (Enabled, show)
 
 InstancesResetAnnounce = false
+
+#
+#    Quests.EnableQuestTracker
+#        Description: Store datas in the database about quest completion and abandonment to help finding out bugged quests.
+#        Default:     0  - (Disabled)
+#                     1  - (Enabled)
+
+Quests.EnableQuestTracker = 0
 
 #
 #    Quests.LowLevelHideDiff
@@ -2034,9 +2061,9 @@ AutoBroadcast.Center = 0
 #
 #    AutoBroadcast.Timer
 #        Description: Timer (in milliseconds) for auto broadcasts.
-#        Default:     60000 - (60 seconds)
+#        Default:     60000 - (10 minutes)
 
-AutoBroadcast.Timer = 60000
+AutoBroadcast.Timer = 600000
 
 #
 ###################################################################################################
@@ -2467,7 +2494,7 @@ PlayerStart.AllReputation = 0
 #        Description: If enabled, players will start with all their class spells (not talents).
 #                     You must populate playercreateinfo_spell_custom table with the spells you
 #                     want, or this will not work! The table has data for all classes / races up
-#                     to TBC expansion.
+#                     to WoTLK expansion.
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
@@ -2648,6 +2675,35 @@ PlayerDump.DisallowOverwrite = 1
 #        Default:     0  - (Do not show)
 
 UI.ShowQuestLevelsInDialogs = 0
+
+#
+#     Calculate.Creature.Zone.Area.Data
+#        Description: Calculate at loading creature zoneId / areaId and save in creature table (WARNING: SLOW WORLD SERVER STARTUP)
+#        Default:     0  - (Do not show)
+
+Calculate.Creature.Zone.Area.Data = 0
+
+#
+#     Calculate.Gameoject.Zone.Area.Data
+#        Description: Calculate at loading gameobject zoneId / areaId and save in gameobject table (WARNING: SLOW WORLD SERVER STARTUP)
+#        Default:     0  - (Do not show)
+
+Calculate.Gameoject.Zone.Area.Data = 0
+
+#
+#     NoGrayAggro
+#        Description: Gray mobs will not aggro players above/below some levels
+#                     NoGrayAggro.Above: If player is at this level or above, gray mobs will not attack
+#                     NoGrayAggro.Below: If player is at this level or below, gray mobs will not attack
+#        Example:     You can for example make players free from gray until they reach level 30.
+#                     Then gray will start to attack them, until they reach max level (80 for example):
+#                     NoGrayAggro.Above = 80
+#                     NoGrayAggro.Below = 29
+#        Default: 0 - (Blizzlike)
+#
+
+NoGrayAggro.Above = 0
+NoGrayAggro.Below = 0
 
 #
 ###################################################################################################
@@ -2879,8 +2935,8 @@ AuctionHouseBot.Class.Glyph = 3
 ###################################################################################################
 
 ###################################################################################################
+# AUCTION HOUSE BOT ITEM FINE TUNING
 #
-# AHBot ITEM FINE TUNING
 #    The following are usefull for limiting what character levels can
 #    benefit from the auction house
 #
@@ -2953,7 +3009,7 @@ AuctionHouseBot.forceExcludeItems = ""
 ###################################################################################################
 
 ###################################################################################################
-#    AHBot Buyer config
+# AUCTION HOUSE BOT BUYER CONFIG
 #
 #    AuctionHouseBot.Buyer.Enabled
 #       Description: General enable or disable AuctionHouseBot Buyer functionality
@@ -3003,7 +3059,7 @@ AuctionHouseBot.Buyer.Neutral.Chance.Ratio = 3
 ###################################################################################################
 
 ###################################################################################################
-#  LOGGING SYSTEM SETTINGS
+# LOGGING SYSTEM SETTINGS
 #
 #  Appender config values: Given a appender "name"
 #    Appender.name

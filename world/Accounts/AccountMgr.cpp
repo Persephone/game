@@ -84,7 +84,7 @@ AccountOpResult AccountMgr::DeleteAccount(uint32 accountId)
             ObjectGuid guid(HIGHGUID_PLAYER, (*result)[0].GetUInt32());
 
             // Kick if player is online
-            if (Player* p = ObjectAccessor::FindPlayer(guid))
+            if (Player* p = ObjectAccessor::FindConnectedPlayer(guid))
             {
                 WorldSession* s = p->GetSession();
                 s->KickPlayer();                            // mark session to remove at next session list update
@@ -462,7 +462,7 @@ void AccountMgr::LoadRBAC()
     while (result->NextRow());
 
     TC_LOG_DEBUG("rbac", "AccountMgr::LoadRBAC: Loading default permissions");
-    result = LoginDatabase.Query("SELECT secId, permissionId FROM rbac_default_permissions ORDER BY secId ASC");
+    result = LoginDatabase.PQuery("SELECT secId, permissionId FROM rbac_default_permissions WHERE (realmId = %u OR realmId = -1) ORDER BY secId ASC", realmID);
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 default permission definitions. DB table `rbac_default_permissions` is empty.");

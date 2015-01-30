@@ -871,7 +871,7 @@ Player* Creature::GetLootRecipient() const
 {
     if (!m_lootRecipient)
         return NULL;
-    return ObjectAccessor::FindPlayer(m_lootRecipient);
+    return ObjectAccessor::FindConnectedPlayer(m_lootRecipient);
 }
 
 Group* Creature::GetLootRecipientGroup() const
@@ -1407,7 +1407,27 @@ bool Creature::CanStartAttack(Unit const* who, bool force) const
     if (!CanCreatureAttack(who, force))
         return false;
 
+    // No aggro from gray creatures
+    if (CheckNoGrayAggroConfig(who->getLevelForTarget(this), getLevelForTarget(who)))
+        return false;
+
     return IsWithinLOSInMap(who);
+}
+
+
+bool Creature::CheckNoGrayAggroConfig(uint32 playerLevel, uint32 creatureLevel) const
+{
+    if (Trinity::XP::GetColorCode(playerLevel, creatureLevel) != XP_GRAY)
+        return false;
+
+    uint32 notAbove = sWorld->getIntConfig(CONFIG_NO_GRAY_AGGRO_ABOVE);
+    uint32 notBelow = sWorld->getIntConfig(CONFIG_NO_GRAY_AGGRO_BELOW);
+    if (notAbove == 0 && notBelow == 0)
+        return false;
+
+    if (playerLevel <= notBelow || (playerLevel >= notAbove && notAbove > 0))
+        return true;
+    return false;
 }
 
 float Creature::GetAttackDistance(Unit const* player) const
@@ -1876,6 +1896,9 @@ void Creature::CallForHelp(float radius)
 
 bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /*= true*/) const
 {
+    if (IsInEvadeMode())
+        return false;
+
     // is it true?
     if (!HasReactState(REACT_AGGRESSIVE))
         return false;
@@ -2408,16 +2431,6 @@ std::string const & Creature::GetNameForLocaleIdx(LocaleConstant loc_idx) const
     }
 
     return GetName();
-}
-
-//Do not if this works or not, moving creature to another map is very dangerous
-void Creature::FarTeleportTo(Map* map, float X, float Y, float Z, float O)
-{
-    CleanupBeforeRemoveFromMap(false);
-    GetMap()->RemoveFromMap(this, false);
-    Relocate(X, Y, Z, O);
-    SetMap(map);
-    GetMap()->AddToMap(this);
 }
 
 uint32 Creature::GetPetAutoSpellOnPos(uint8 pos) const

@@ -42,14 +42,6 @@ enum CharterItemIDs
     ARENA_TEAM_CHARTER_5v5                        = 23562
 };
 
-enum CharterCosts
-{
-    GUILD_CHARTER_COST                            = 1000,
-    ARENA_TEAM_CHARTER_2v2_COST                   = 800000,
-    ARENA_TEAM_CHARTER_3v3_COST                   = 1200000,
-    ARENA_TEAM_CHARTER_5v5_COST                   = 2000000
-};
-
 void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "Received opcode CMSG_PETITION_BUY");
@@ -106,7 +98,7 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recvData)
             return;
 
         charterid = GUILD_CHARTER;
-        cost = GUILD_CHARTER_COST;
+        cost = sWorld->getIntConfig(CONFIG_CHARTER_COST_GUILD);
         type = GUILD_CHARTER_TYPE;
     }
     else
@@ -122,17 +114,17 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recvData)
         {
             case 1:
                 charterid = ARENA_TEAM_CHARTER_2v2;
-                cost = ARENA_TEAM_CHARTER_2v2_COST;
+                cost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_2v2);
                 type = ARENA_TEAM_CHARTER_2v2_TYPE;
                 break;
             case 2:
                 charterid = ARENA_TEAM_CHARTER_3v3;
-                cost = ARENA_TEAM_CHARTER_3v3_COST;
+                cost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_3v3);
                 type = ARENA_TEAM_CHARTER_3v3_TYPE;
                 break;
             case 3:
                 charterid = ARENA_TEAM_CHARTER_5v5;
-                cost = ARENA_TEAM_CHARTER_5v5_COST;
+                cost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_5v5);
                 type = ARENA_TEAM_CHARTER_5v5_TYPE;
                 break;
             default:
@@ -263,7 +255,7 @@ void WorldSession::HandlePetitionShowSignOpcode(WorldPacket& recvData)
 
     if (!result)
     {
-        TC_LOG_DEBUG("entities.player.items", "Petition %u is not found for player %u %s", petitionguid.GetCounter(), GetPlayer()->GetGUIDLow(), GetPlayer()->GetName().c_str());
+        TC_LOG_DEBUG("entities.player.items", "Petition %s is not found for player %u %s", petitionguid.ToString().c_str(), GetPlayer()->GetGUIDLow(), GetPlayer()->GetName().c_str());
         return;
     }
     Field* fields = result->Fetch();
@@ -555,7 +547,7 @@ void WorldSession::HandlePetitionSignOpcode(WorldPacket& recvData)
         SendPacket(&data);
 
         // update for owner if online
-        if (Player* owner = ObjectAccessor::FindPlayer(ownerGuid))
+        if (Player* owner = ObjectAccessor::FindConnectedPlayer(ownerGuid))
             owner->GetSession()->SendPacket(&data);
         return;
     }
@@ -585,7 +577,7 @@ void WorldSession::HandlePetitionSignOpcode(WorldPacket& recvData)
     //    item->SetUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1+1, signs);
 
     // update for owner if online
-    if (Player* owner = ObjectAccessor::FindPlayer(ownerGuid))
+    if (Player* owner = ObjectAccessor::FindConnectedPlayer(ownerGuid))
         owner->GetSession()->SendPacket(&data);
 }
 
@@ -609,7 +601,7 @@ void WorldSession::HandlePetitionDeclineOpcode(WorldPacket& recvData)
     Field* fields = result->Fetch();
     ObjectGuid ownerguid(HIGHGUID_PLAYER, 0, fields[0].GetUInt32());
 
-    Player* owner = ObjectAccessor::FindPlayer(ownerguid);
+    Player* owner = ObjectAccessor::FindConnectedPlayer(ownerguid);
     if (owner)                                               // petition owner online
     {
         WorldPacket data(MSG_PETITION_DECLINE, 8);
@@ -630,7 +622,7 @@ void WorldSession::HandleOfferPetitionOpcode(WorldPacket& recvData)
     recvData >> petitionguid;                              // petition guid
     recvData >> plguid;                                    // player guid
 
-    player = ObjectAccessor::FindPlayer(plguid);
+    player = ObjectAccessor::FindConnectedPlayer(plguid);
     if (!player)
         return;
 
@@ -945,7 +937,7 @@ void WorldSession::SendPetitionShowList(ObjectGuid guid)
         data << uint32(1);                                  // index
         data << uint32(GUILD_CHARTER);                      // charter entry
         data << uint32(CHARTER_DISPLAY_ID);                 // charter display id
-        data << uint32(GUILD_CHARTER_COST);                 // charter cost
+        data << uint32(sWorld->getIntConfig(CONFIG_CHARTER_COST_GUILD)); // charter cost
         data << uint32(0);                                  // unknown
         data << uint32(sWorld->getIntConfig(CONFIG_MIN_PETITION_SIGNS)); // required signs
     }
@@ -956,21 +948,21 @@ void WorldSession::SendPetitionShowList(ObjectGuid guid)
         data << uint32(1);                                  // index
         data << uint32(ARENA_TEAM_CHARTER_2v2);             // charter entry
         data << uint32(CHARTER_DISPLAY_ID);                 // charter display id
-        data << uint32(ARENA_TEAM_CHARTER_2v2_COST);        // charter cost
+        data << uint32(sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_2v2)); // charter cost
         data << uint32(2);                                  // unknown
         data << uint32(2);                                  // required signs?
         // 3v3
         data << uint32(2);                                  // index
         data << uint32(ARENA_TEAM_CHARTER_3v3);             // charter entry
         data << uint32(CHARTER_DISPLAY_ID);                 // charter display id
-        data << uint32(ARENA_TEAM_CHARTER_3v3_COST);        // charter cost
+        data << uint32(sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_3v3)); // charter cost
         data << uint32(3);                                  // unknown
         data << uint32(3);                                  // required signs?
         // 5v5
         data << uint32(3);                                  // index
         data << uint32(ARENA_TEAM_CHARTER_5v5);             // charter entry
         data << uint32(CHARTER_DISPLAY_ID);                 // charter display id
-        data << uint32(ARENA_TEAM_CHARTER_5v5_COST);        // charter cost
+        data << uint32(sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_5v5)); // charter cost
         data << uint32(5);                                  // unknown
         data << uint32(5);                                  // required signs?
     }

@@ -61,6 +61,7 @@
 #include "Pet.h"
 #include "QuestDef.h"
 #include "ReputationMgr.h"
+#include "revision.h"
 #include "SkillDiscovery.h"
 #include "SocialMgr.h"
 #include "Spell.h"
@@ -202,7 +203,7 @@ void PlayerTaxi::LoadTaxiMask(std::string const &data)
     for (Tokenizer::const_iterator iter = tokens.begin(); index < TaxiMaskSize && iter != tokens.end(); ++iter, ++index)
     {
         // load and set bits only for existing taxi nodes
-        m_taximask[index] = sTaxiNodesMask[index] & uint32(atol(*iter));
+        m_taximask[index] = sTaxiNodesMask[index] & atoul(*iter);
     }
 }
 
@@ -228,7 +229,7 @@ bool PlayerTaxi::LoadTaxiDestinationsFromString(const std::string& values, uint3
 
     for (Tokenizer::const_iterator iter = Tokenizer.begin(); iter != Tokenizer.end(); ++iter)
     {
-        uint32 node = uint32(atol(*iter));
+        uint32 node = atoul(*iter);
         AddTaxiDestination(node);
     }
 
@@ -2764,16 +2765,9 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
     if (creature->GetCharmerGUID())
         return NULL;
 
-    // not enemy
-    if (creature->IsHostileTo(this))
+    // not unfriendly/hostile
+    if (creature->GetReactionTo(this) <= REP_UNFRIENDLY)
         return NULL;
-
-    // not unfriendly
-    if (FactionTemplateEntry const* factionTemplate = sFactionTemplateStore.LookupEntry(creature->getFaction()))
-        if (factionTemplate->faction)
-            if (FactionEntry const* faction = sFactionStore.LookupEntry(factionTemplate->faction))
-                if (faction->reputationListID >= 0 && GetReputationMgr().GetRank(faction) <= REP_UNFRIENDLY)
-                    return NULL;
 
     // not too far
     if (!creature->IsWithinDistInMap(this, INTERACTION_DISTANCE))
@@ -4814,11 +4808,8 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
                 {
                     if (Player* pFriend = ObjectAccessor::FindPlayer(ObjectGuid(HIGHGUID_PLAYER, 0, (*resultFriends)[0].GetUInt32())))
                     {
-                        if (pFriend->IsInWorld())
-                        {
-                            pFriend->GetSocial()->RemoveFromSocialList(guid, false);
-                            sSocialMgr->SendFriendStatus(pFriend, FRIEND_REMOVED, guid, false);
-                        }
+                        pFriend->GetSocial()->RemoveFromSocialList(guid, false);
+                        sSocialMgr->SendFriendStatus(pFriend, FRIEND_REMOVED, guid, false);
                     }
                 } while (resultFriends->NextRow());
             }
@@ -15238,6 +15229,19 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
     StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_QUEST, quest_id);
 
     SendQuestUpdate(quest_id);
+
+    if (sWorld->getBoolConfig(CONFIG_QUEST_ENABLE_QUEST_TRACKER)) // check if Quest Tracker is enabled
+    {
+        // prepare Quest Tracker datas
+        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_QUEST_TRACK);
+        stmt->setUInt32(0, quest_id);
+        stmt->setUInt32(1, GetGUIDLow());
+        stmt->setString(2, _HASH);
+        stmt->setString(3, _DATE);
+
+        // add to Quest Tracker
+        CharacterDatabase.Execute(stmt);
+    }
 }
 
 void Player::CompleteQuest(uint32 quest_id)
@@ -15257,6 +15261,17 @@ void Player::CompleteQuest(uint32 quest_id)
             else
                 SendQuestComplete(quest_id);
         }
+    }
+
+    if (sWorld->getBoolConfig(CONFIG_QUEST_ENABLE_QUEST_TRACKER)) // check if Quest Tracker is enabled
+    {
+        // prepare Quest Tracker datas
+        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_QUEST_TRACK_COMPLETE_TIME);
+        stmt->setUInt32(0, quest_id);
+        stmt->setUInt32(1, GetGUIDLow());
+
+        // add to Quest Tracker
+        CharacterDatabase.Execute(stmt);
     }
 }
 
@@ -15461,12 +15476,13 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
 void Player::FailQuest(uint32 questId)
 {
-    // Already complete quests shouldn't turn failed.
-    if (GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
-        return;
 
     if (Quest const* quest = sObjectMgr->GetQuestTemplate(questId))
     {
+        // Already complete quests shouldn't turn failed.
+        if (GetQuestStatus(questId) == QUEST_STATUS_COMPLETE && !quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_TIMED))
+            return;
+
         SetQuestStatus(questId, QUEST_STATUS_FAILED);
 
         uint16 log_slot = FindQuestSlot(questId);
@@ -20182,19 +20198,19 @@ void Player::SendAttackSwingNotInRange()
     GetSession()->SendPacket(&data);
 }
 
-void Player::SavePositionInDB(uint32 mapid, float x, float y, float z, float o, uint32 zone, ObjectGuid guid)
+void Player::SavePositionInDB(WorldLocation const& loc, uint16 zoneId, ObjectGuid guid, SQLTransaction& trans)
 {
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHARACTER_POSITION);
 
-    stmt->setFloat(0, x);
-    stmt->setFloat(1, y);
-    stmt->setFloat(2, z);
-    stmt->setFloat(3, o);
-    stmt->setUInt16(4, uint16(mapid));
-    stmt->setUInt16(5, uint16(zone));
+    stmt->setFloat(0, loc.GetPositionX());
+    stmt->setFloat(1, loc.GetPositionY());
+    stmt->setFloat(2, loc.GetPositionZ());
+    stmt->setFloat(3, loc.GetOrientation());
+    stmt->setUInt16(4, uint16(loc.GetMapId()));
+    stmt->setUInt16(5, zoneId);
     stmt->setUInt32(6, guid.GetCounter());
 
-    CharacterDatabase.Execute(stmt);
+    CharacterDatabase.ExecuteOrAppend(trans, stmt);
 }
 
 void Player::SetUInt32ValueInArray(Tokenizer& tokens, uint16 index, uint32 value)
@@ -20208,10 +20224,10 @@ void Player::SetUInt32ValueInArray(Tokenizer& tokens, uint16 index, uint32 value
     tokens[index] = buf;
 }
 
-void Player::Customize(ObjectGuid guid, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair)
+void Player::Customize(CharacterCustomizeInfo const* customizeInfo, SQLTransaction& trans)
 {
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_PLAYERBYTES2);
-    stmt->setUInt32(0, guid.GetCounter());
+    stmt->setUInt32(0, customizeInfo->Guid.GetCounter());
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
     if (!result)
@@ -20221,16 +20237,16 @@ void Player::Customize(ObjectGuid guid, uint8 gender, uint8 skin, uint8 face, ui
 
     uint32 playerBytes2 = fields[0].GetUInt32();
     playerBytes2 &= ~0xFF;
-    playerBytes2 |= facialHair;
+    playerBytes2 |= customizeInfo->FacialHair;
 
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_GENDER_PLAYERBYTES);
 
-    stmt->setUInt8(0, gender);
-    stmt->setUInt32(1, skin | (face << 8) | (hairStyle << 16) | (hairColor << 24));
+    stmt->setUInt8(0, customizeInfo->Gender);
+    stmt->setUInt32(1, customizeInfo->Skin | (customizeInfo->Face << 8) | (customizeInfo->HairStyle << 16) | (customizeInfo->HairColor << 24));
     stmt->setUInt32(2, playerBytes2);
-    stmt->setUInt32(3, guid.GetCounter());
+    stmt->setUInt32(3, customizeInfo->Guid.GetCounter());
 
-    CharacterDatabase.Execute(stmt);
+    CharacterDatabase.ExecuteOrAppend(trans, stmt);
 }
 
 void Player::SendAttackSwingDeadTarget()
@@ -20261,7 +20277,7 @@ void Player::SendAutoRepeatCancel(Unit* target)
 {
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, target->GetPackGUID().size());
     data << target->GetPackGUID();                     // may be it's target guid
-    GetSession()->SendPacket(&data);
+    SendMessageToSet(&data, false);
 }
 
 void Player::SendExplorationExperience(uint32 Area, uint32 Experience)
@@ -21123,7 +21139,7 @@ void Player::RemovePetitionsAndSigns(ObjectGuid guid, uint32 type)
             ObjectGuid petitionguid = ObjectGuid(HIGHGUID_ITEM, fields[1].GetUInt32());
 
             // send update if charter owner in game
-            Player* owner = ObjectAccessor::FindPlayer(ownerguid);
+            Player* owner = ObjectAccessor::FindConnectedPlayer(ownerguid);
             if (owner)
                 owner->GetSession()->SendPetitionQueryOpcode(petitionguid);
         } while (result->NextRow());
@@ -21213,12 +21229,15 @@ void Player::SetRestBonus(float rest_bonus_new)
         m_rest_bonus = rest_bonus_new;
 
     // update data for client
-    if (GetSession()->IsARecruiter() || (GetSession()->GetRecruiterId() != 0))
+    if ((GetsRecruitAFriendBonus(true) && (GetSession()->IsARecruiter() || GetSession()->GetRecruiterId() != 0)))
         SetByteValue(PLAYER_BYTES_2, 3, REST_STATE_RAF_LINKED);
-    else if (m_rest_bonus > 10)
-        SetByteValue(PLAYER_BYTES_2, 3, REST_STATE_RESTED);              // Set Reststate = Rested
-    else if (m_rest_bonus <= 1)
-        SetByteValue(PLAYER_BYTES_2, 3, REST_STATE_NOT_RAF_LINKED);              // Set Reststate = Normal
+    else
+    {
+        if (m_rest_bonus > 10)
+            SetByteValue(PLAYER_BYTES_2, 3, REST_STATE_RESTED);
+        else if (m_rest_bonus <= 1)
+            SetByteValue(PLAYER_BYTES_2, 3, REST_STATE_NOT_RAF_LINKED);
+    }
 
     //RestTickUpdate
     SetUInt32Value(PLAYER_REST_STATE_EXPERIENCE, uint32(m_rest_bonus));
@@ -22509,11 +22528,7 @@ bool Player::IsVisibleGloballyFor(Player const* u) const
         return GetSession()->GetSecurity() <= u->GetSession()->GetSecurity();
 
     // non faction visibility non-breakable for non-GMs
-    if (!IsVisible())
-        return false;
-
-    // non-gm stealth/invisibility not hide from global player lists
-    return true;
+    return false;
 }
 
 template<class T>
@@ -24280,7 +24295,7 @@ Player* Player::GetNextRandomRaidMember(float radius)
     return nearMembers[randTarget];
 }
 
-PartyResult Player::CanUninviteFromGroup() const
+PartyResult Player::CanUninviteFromGroup(ObjectGuid guidMember) const
 {
     Group const* grp = GetGroup();
     if (!grp)
@@ -24322,6 +24337,9 @@ PartyResult Player::CanUninviteFromGroup() const
 
         if (InBattleground())
             return ERR_INVITE_RESTRICTED;
+
+        if (grp->IsLeader(guidMember))
+            return ERR_NOT_LEADER;
     }
 
     return ERR_PARTY_RESULT_OK;

@@ -21,7 +21,7 @@
 
 #include "Common.h"
 #include <atomic>
-#include "world/DataStores/DBCStores.h"
+#include "DBCStores.h"
 #include "QuestDef.h"
 #include "SharedDefines.h"
 #include "World.h"
@@ -873,6 +873,15 @@ class GroupScript : public ScriptObject
 // Placed here due to ScriptRegistry::AddScript dependency.
 #define sScriptMgr ScriptMgr::instance()
 
+// namespace
+// {
+    typedef std::vector<ScriptObject*> UnusedScriptContainer;
+    typedef std::list<std::string> UnusedScriptNamesContainer;
+
+    extern UnusedScriptContainer UnusedScripts;
+    extern UnusedScriptNamesContainer UnusedScriptNames;
+// }
+
 // Manages registration, loading, and execution of scripts.
 class ScriptMgr
 {
@@ -901,6 +910,7 @@ class ScriptMgr
     public: /* Unloading */
 
         void Unload();
+        void UnloadUnusedScripts();
 
     public: /* SpellScriptLoader */
 
